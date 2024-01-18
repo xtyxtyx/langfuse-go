@@ -55,8 +55,30 @@ func (o BasicObservation) Span(span *Span) *Span {
 }
 
 func (o BasicObservation) Event(opts *Event) *Event {
-	//TODO implement me
-	panic("implement me")
+	if opts == nil {
+		opts = &Event{}
+	}
+
+	if opts.ID == "" {
+		opts.ID = ksuid.New().String()
+	}
+
+	if opts.ParentID == "" {
+		opts.ParentID = o.ID
+	}
+
+	if opts.TraceID == "" {
+		opts.TraceID = o.TraceID
+	}
+
+	if opts.StartTime.IsZero() {
+		opts.StartTime = time.Now()
+	}
+
+	opts.eventManager = o.eventManager
+	o.eventManager.Enqueue(opts.ID, EVENT_CREATE, opts)
+
+	return opts
 }
 
 func (o BasicObservation) Generation(generation *Generation) *Generation {
@@ -87,8 +109,26 @@ func (o BasicObservation) Generation(generation *Generation) *Generation {
 }
 
 func (o BasicObservation) Score(opts *Score) *Score {
-	//TODO implement me
-	panic("implement me")
+	if opts == nil {
+		opts = &Score{}
+	}
+
+	if opts.ID == "" {
+		opts.ID = ksuid.New().String()
+	}
+
+	if opts.TraceID == "" {
+		opts.TraceID = o.TraceID
+	}
+
+	if opts.Name == "" {
+		opts.Name = o.Name
+	}
+
+	opts.eventManager = o.eventManager
+	o.eventManager.Enqueue(opts.ID, SCORE_CREATE, opts)
+
+	return opts
 }
 
 type Span struct {
