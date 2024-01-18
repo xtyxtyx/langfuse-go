@@ -6,6 +6,7 @@ import (
 	"github.com/wepala/langfuse-go/api/client"
 	"net/http"
 	"os"
+	"time"
 )
 
 type Options struct {
@@ -51,23 +52,75 @@ func (l *LangFuse) Trace(ctxt context.Context, opts *Trace) *Trace {
 }
 
 func (l *LangFuse) Span(ctxt context.Context, opts *Span) *Span {
-	//TODO implement me
-	panic("implement me")
+	if opts == nil {
+		opts = &Span{}
+	}
+
+	if opts.ID == "" {
+		opts.ID = ksuid.New().String()
+	}
+
+	if opts.StartTime.IsZero() {
+		opts.StartTime = time.Now()
+	}
+
+	l.eventManager.Enqueue(opts.ID, SPAN_CREATE, opts)
+	return opts
 }
 
 func (l *LangFuse) Event(ctxt context.Context, opts *Event) *Event {
-	//TODO implement me
-	panic("implement me")
+	if opts == nil {
+		opts = &Event{}
+	}
+
+	if opts.ID == "" {
+		opts.ID = ksuid.New().String()
+	}
+
+	if opts.StartTime.IsZero() {
+		opts.StartTime = time.Now()
+	}
+
+	l.eventManager.Enqueue(opts.ID, EVENT_CREATE, opts)
+	return opts
 }
 
 func (l *LangFuse) Generation(ctxt context.Context, opts *Generation) *Generation {
-	//TODO implement me
-	panic("implement me")
+	if opts == nil {
+		opts = &Generation{}
+	}
+
+	if opts.ID == "" {
+		opts.ID = ksuid.New().String()
+	}
+
+	if opts.StartTime.IsZero() {
+		opts.StartTime = time.Now()
+	}
+
+	l.eventManager.Enqueue(opts.ID, GENERATION_CREATE, opts)
+	return opts
 }
 
 func (l *LangFuse) Score(ctxt context.Context, opts *Score) *Score {
-	//TODO implement me
-	panic("implement me")
+	if opts == nil {
+		opts = &Score{}
+	}
+
+	if opts.ID == "" {
+		opts.ID = ksuid.New().String()
+	}
+
+	if opts.TraceID == "" {
+		return nil
+	}
+
+	if opts.Name == "" {
+		return nil
+	}
+
+	l.eventManager.Enqueue(opts.ID, SCORE_CREATE, opts)
+	return opts
 }
 
 func New(ctxt context.Context, options Options) *LangFuse {

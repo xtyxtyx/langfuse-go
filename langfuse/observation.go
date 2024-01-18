@@ -134,4 +134,7 @@ type Event struct {
 
 type Score struct {
 	BasicObservation
+	Value         int    `json:"value,omitempty,default:0"`
+	ObservationId string `json:"observationId,omitempty"`
+	Comment       string `json:"comment,omitempty"`
 }
