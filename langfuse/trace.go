@@ -10,7 +10,7 @@ type Trace struct {
 	Public    bool     `json:"public"`
 }
 
-func (o Trace) Span(span *Span) *Span {
+func (o Trace) Span(span *Span) (*Span, error) {
 	if span == nil {
 		span = &Span{}
 	}
