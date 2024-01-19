@@ -2,6 +2,7 @@ package langfuse
 
 import (
 	"context"
+	"fmt"
 	"github.com/segmentio/ksuid"
 	"github.com/wepala/langfuse-go/api/client"
 	"net/http"
@@ -67,7 +68,7 @@ func (l *LangFuse) Span(ctxt context.Context, opts *Span) (*Span, error) {
 	}
 
 	l.eventManager.Enqueue(opts.ID, SPAN_CREATE, opts)
-	return opts
+	return opts, nil
 }
 
 func (l *LangFuse) Event(ctxt context.Context, opts *Event) (*Event, error) {
@@ -84,7 +85,7 @@ func (l *LangFuse) Event(ctxt context.Context, opts *Event) (*Event, error) {
 	}
 
 	l.eventManager.Enqueue(opts.ID, EVENT_CREATE, opts)
-	return opts
+	return opts, nil
 }
 
 func (l *LangFuse) Generation(ctxt context.Context, opts *Generation) (*Generation, error) {
@@ -101,7 +102,7 @@ func (l *LangFuse) Generation(ctxt context.Context, opts *Generation) (*Generati
 	}
 
 	l.eventManager.Enqueue(opts.ID, GENERATION_CREATE, opts)
-	return opts
+	return opts, nil
 }
 
 func (l *LangFuse) Score(ctxt context.Context, opts *Score) (*Score, error) {
@@ -114,15 +115,15 @@ func (l *LangFuse) Score(ctxt context.Context, opts *Score) (*Score, error) {
 	}
 
 	if opts.TraceID == "" {
-		return nil
+		return nil, fmt.Errorf("trace id is required")
 	}
 
 	if opts.Name == "" {
-		return nil
+		return nil, fmt.Errorf("name is required")
 	}
 
 	l.eventManager.Enqueue(opts.ID, SCORE_CREATE, opts)
-	return opts
+	return opts, nil
 }
 
 func New(ctxt context.Context, options Options) *LangFuse {

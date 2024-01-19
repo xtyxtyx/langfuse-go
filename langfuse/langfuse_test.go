@@ -182,10 +182,15 @@ func TestLangFuse_Span(t *testing.T) {
 		sdk := langfuse.New(nil, langfuse.Options{
 			EventManager: eventManager,
 		})
-		span := sdk.Span(context.Background(), &langfuse.Span{})
+		span, err := sdk.Span(context.Background(), &langfuse.Span{})
 		if span == nil {
 			t.Errorf("expected span to be created")
 		}
+
+		if err != nil {
+			t.Errorf("expected error to be nil")
+		}
+
 		if len(eventManager.calls.Enqueue) != 1 {
 			t.Errorf("expected event to be added to queue")
 		}
@@ -212,7 +217,7 @@ func TestLangFuse_Span(t *testing.T) {
 		sdk := langfuse.New(nil, langfuse.Options{
 			EventManager: eventManager,
 		})
-		span := sdk.Span(context.Background(), &langfuse.Span{
+		span, err := sdk.Span(context.Background(), &langfuse.Span{
 			BasicObservation: langfuse.BasicObservation{
 				ID: "test",
 			},
@@ -220,6 +225,11 @@ func TestLangFuse_Span(t *testing.T) {
 		if span == nil {
 			t.Errorf("expected span to be created")
 		}
+
+		if err != nil {
+			t.Errorf("expected error to be nil")
+		}
+
 		if len(eventManager.calls.Enqueue) != 1 {
 			t.Errorf("expected event to be added to queue")
 		}
@@ -251,10 +261,15 @@ func TestLangFuse_Generation(t *testing.T) {
 		sdk := langfuse.New(nil, langfuse.Options{
 			EventManager: eventManager,
 		})
-		generation := sdk.Generation(context.Background(), &langfuse.Generation{})
+		generation, err := sdk.Generation(context.Background(), &langfuse.Generation{})
 		if generation == nil {
 			t.Errorf("expected generation to be created")
 		}
+
+		if err != nil {
+			t.Errorf("expected error to be nil")
+		}
+
 		if len(eventManager.calls.Enqueue) != 1 {
 			t.Errorf("expected event to be added to queue")
 		}
@@ -281,7 +296,7 @@ func TestLangFuse_Generation(t *testing.T) {
 		sdk := langfuse.New(nil, langfuse.Options{
 			EventManager: eventManager,
 		})
-		generation := sdk.Generation(context.Background(), &langfuse.Generation{
+		generation, err := sdk.Generation(context.Background(), &langfuse.Generation{
 			BasicObservation: langfuse.BasicObservation{
 				ID: "test",
 			},
@@ -289,6 +304,11 @@ func TestLangFuse_Generation(t *testing.T) {
 		if generation == nil {
 			t.Errorf("expected generation to be created")
 		}
+
+		if err != nil {
+			t.Errorf("expected error to be nil")
+		}
+
 		if len(eventManager.calls.Enqueue) != 1 {
 			t.Errorf("expected event to be added to queue")
 		}
@@ -320,7 +340,7 @@ func TestLangFuse_Score(t *testing.T) {
 		sdk := langfuse.New(nil, langfuse.Options{
 			EventManager: eventManager,
 		})
-		score := sdk.Score(context.Background(), &langfuse.Score{
+		score, err := sdk.Score(context.Background(), &langfuse.Score{
 			BasicObservation: langfuse.BasicObservation{
 				Name:    "test",
 				TraceID: "test",
@@ -329,6 +349,11 @@ func TestLangFuse_Score(t *testing.T) {
 		if score == nil {
 			t.Errorf("expected score to be created")
 		}
+
+		if err != nil {
+			t.Errorf("expected error to be nil")
+		}
+
 		if len(eventManager.calls.Enqueue) != 1 {
 			t.Errorf("expected event to be added to queue")
 		}
@@ -355,7 +380,7 @@ func TestLangFuse_Score(t *testing.T) {
 		sdk := langfuse.New(nil, langfuse.Options{
 			EventManager: eventManager,
 		})
-		score := sdk.Score(context.Background(), &langfuse.Score{
+		score, err := sdk.Score(context.Background(), &langfuse.Score{
 			BasicObservation: langfuse.BasicObservation{
 				ID:      "test",
 				Name:    "test",
@@ -365,6 +390,11 @@ func TestLangFuse_Score(t *testing.T) {
 		if score == nil {
 			t.Errorf("expected score to be created")
 		}
+
+		if err != nil {
+			t.Errorf("expected error to be nil")
+		}
+
 		if len(eventManager.calls.Enqueue) != 1 {
 			t.Errorf("expected event to be added to queue")
 		}
@@ -380,7 +410,7 @@ func TestLangFuse_Score(t *testing.T) {
 		sdk := langfuse.New(nil, langfuse.Options{
 			EventManager: eventManager,
 		})
-		score := sdk.Score(context.Background(), &langfuse.Score{
+		score, err := sdk.Score(context.Background(), &langfuse.Score{
 			BasicObservation: langfuse.BasicObservation{
 				ID:   "test",
 				Name: "test",
@@ -389,6 +419,11 @@ func TestLangFuse_Score(t *testing.T) {
 		if score != nil {
 			t.Errorf("expected score not to be created")
 		}
+
+		if err == nil {
+			t.Errorf("expected error to be returned")
+		}
+
 		if len(eventManager.calls.Enqueue) != 0 {
 			t.Errorf("expected event not to be added to queue")
 		}
@@ -404,7 +439,7 @@ func TestLangFuse_Score(t *testing.T) {
 		sdk := langfuse.New(nil, langfuse.Options{
 			EventManager: eventManager,
 		})
-		score := sdk.Score(context.Background(), &langfuse.Score{
+		score, err := sdk.Score(context.Background(), &langfuse.Score{
 			BasicObservation: langfuse.BasicObservation{
 				ID:      "test",
 				TraceID: "test",
@@ -413,6 +448,11 @@ func TestLangFuse_Score(t *testing.T) {
 		if score != nil {
 			t.Errorf("expected score not to be created")
 		}
+
+		if err == nil {
+			t.Errorf("expected error to be returned")
+		}
+
 		if len(eventManager.calls.Enqueue) != 0 {
 			t.Errorf("expected event not to be added to queue")
 		}

@@ -78,7 +78,7 @@ func (o BasicObservation) Event(opts *Event) (*Event, error) {
 	opts.eventManager = o.eventManager
 	o.eventManager.Enqueue(opts.ID, EVENT_CREATE, opts)
 
-	return opts
+	return opts, nil
 }
 
 func (o BasicObservation) Generation(generation *Generation) (*Generation, error) {
@@ -128,7 +128,7 @@ func (o BasicObservation) Score(opts *Score) (*Score, error) {
 	opts.eventManager = o.eventManager
 	o.eventManager.Enqueue(opts.ID, SCORE_CREATE, opts)
 
-	return opts
+	return opts, nil
 }
 
 type Span struct {
