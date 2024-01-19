@@ -113,7 +113,7 @@ func TestLangFuse_Trace(t *testing.T) {
 		sdk := langfuse.New(nil, langfuse.Options{
 			EventManager: eventManager,
 		})
-		trace := sdk.Trace(context.Background(), &langfuse.Trace{})
+		trace, _ := sdk.Trace(context.Background(), &langfuse.Trace{})
 		if trace == nil {
 			t.Errorf("expected trace to be created")
 		}
@@ -143,7 +143,7 @@ func TestLangFuse_Trace(t *testing.T) {
 		sdk := langfuse.New(nil, langfuse.Options{
 			EventManager: eventManager,
 		})
-		trace := sdk.Trace(context.Background(), &langfuse.Trace{
+		trace, _ := sdk.Trace(context.Background(), &langfuse.Trace{
 			BasicObservation: langfuse.BasicObservation{
 				ID: "test",
 			},

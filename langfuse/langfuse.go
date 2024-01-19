@@ -15,6 +15,8 @@ type Options struct {
 	SecretKey    string       `json:"-"`
 	Host         string       `json:"host"`
 	Release      string       `json:"release"`
+	TotalQueues  int          `json:"total_queues"`
+	MaxBatchSize int          `json:"max_batch_size"`
 }
 
 type LangFuse struct {
@@ -31,7 +33,7 @@ func (l *LangFuse) EventManager() EventManager {
 	return l.eventManager
 }
 
-func (l *LangFuse) Trace(ctxt context.Context, opts *Trace) *Trace {
+func (l *LangFuse) Trace(ctxt context.Context, opts *Trace) (*Trace, error) {
 	if opts == nil {
 		opts = &Trace{}
 	}
@@ -46,26 +48,26 @@ func (l *LangFuse) Trace(ctxt context.Context, opts *Trace) *Trace {
 
 	opts.eventManager = l.eventManager
 
-	l.eventManager.Enqueue(opts.ID, TRACE_CREATE, opts)
-	return opts
+	err := l.eventManager.Enqueue(opts.ID, TRACE_CREATE, opts)
+	return opts, err
 }
 
-func (l *LangFuse) Span(ctxt context.Context, opts *Span) *Span {
+func (l *LangFuse) Span(ctxt context.Context, opts *Span) (*Span, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (l *LangFuse) Event(ctxt context.Context, opts *Event) *Event {
+func (l *LangFuse) Event(ctxt context.Context, opts *Event) (*Event, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (l *LangFuse) Generation(ctxt context.Context, opts *Generation) *Generation {
+func (l *LangFuse) Generation(ctxt context.Context, opts *Generation) (*Generation, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (l *LangFuse) Score(ctxt context.Context, opts *Score) *Score {
+func (l *LangFuse) Score(ctxt context.Context, opts *Score) (*Score, error) {
 	//TODO implement me
 	panic("implement me")
 }
@@ -89,7 +91,13 @@ func New(ctxt context.Context, options Options) *LangFuse {
 
 	var batchEventManager *BatchEventManager
 	if options.EventManager == nil {
-		batchEventManager = NewBatchEventManager(tclient, 10, 0)
+		if options.TotalQueues == 0 {
+			options.TotalQueues = 10
+		}
+		if options.MaxBatchSize == 0 {
+			options.MaxBatchSize = 100
+		}
+		batchEventManager = NewBatchEventManager(tclient, options.TotalQueues, options.MaxBatchSize)
 		options.EventManager = batchEventManager
 	}
 

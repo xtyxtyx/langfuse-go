@@ -7,10 +7,10 @@ import (
 )
 
 type Observation interface {
-	Span(opts *Span) *Span
-	Event(opts *Event) *Event
-	Generation(opts *Generation) *Generation
-	Score(opts *Score) *Score
+	Span(opts *Span) (*Span, error)
+	Event(opts *Event) (*Event, error)
+	Generation(opts *Generation) (*Generation, error)
+	Score(opts *Score) (*Score, error)
 }
 
 type BasicObservation struct {
@@ -27,7 +27,7 @@ type BasicObservation struct {
 	eventManager  EventManager
 }
 
-func (o BasicObservation) Span(span *Span) *Span {
+func (o BasicObservation) Span(span *Span) (*Span, error) {
 	if span == nil {
 		span = &Span{}
 	}
@@ -49,17 +49,17 @@ func (o BasicObservation) Span(span *Span) *Span {
 	}
 
 	span.eventManager = o.eventManager
-	o.eventManager.Enqueue(span.ID, SPAN_CREATE, span)
+	err := o.eventManager.Enqueue(span.ID, SPAN_CREATE, span)
 
-	return span
+	return span, err
 }
 
-func (o BasicObservation) Event(opts *Event) *Event {
+func (o BasicObservation) Event(opts *Event) (*Event, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (o BasicObservation) Generation(generation *Generation) *Generation {
+func (o BasicObservation) Generation(generation *Generation) (*Generation, error) {
 	if generation == nil {
 		generation = &Generation{}
 	}
@@ -81,12 +81,12 @@ func (o BasicObservation) Generation(generation *Generation) *Generation {
 	}
 
 	generation.eventManager = o.eventManager
-	o.eventManager.Enqueue(generation.ID, GENERATION_CREATE, generation)
+	err := o.eventManager.Enqueue(generation.ID, GENERATION_CREATE, generation)
 
-	return generation
+	return generation, err
 }
 
-func (o BasicObservation) Score(opts *Score) *Score {
+func (o BasicObservation) Score(opts *Score) (*Score, error) {
 	//TODO implement me
 	panic("implement me")
 }
