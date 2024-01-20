@@ -20,8 +20,8 @@ type BasicObservation struct {
 	Metadata      map[string]interface{} `json:"metadata,omitempty"`
 	Level         string                 `json:"level,omitempty"`
 	StatusMessage string                 `json:"statusMessage,omitempty"`
-	Input         map[string]interface{} `json:"input,omitempty"`
-	Output        map[string]interface{} `json:"output,omitempty"`
+	Input         interface{}            `json:"input,omitempty"`
+	Output        interface{}            `json:"output,omitempty"`
 	Version       string                 `json:"version,omitempty"`
 	ParentID      string                 `json:"parentObservationId,omitempty"`
 	eventManager  EventManager

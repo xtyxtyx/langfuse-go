@@ -11,9 +11,9 @@ import (
 
 func TestNew(t *testing.T) {
 	t.Run("should use environment variables to setup api client if no options are provided", func(t *testing.T) {
-		_ = t.Setenv("LANGFUSE_PUBLIC_KEY", "public-key")
-		_ = t.Setenv("LANGFUSE_SECRET_KEY", "secret-key")
-		_ = t.Setenv("LANGFUSE_HOST", "http://localhost:8080")
+		t.Setenv("LANGFUSE_PUBLIC_KEY", "public-key")
+		t.Setenv("LANGFUSE_SECRET_KEY", "secret-key")
+		t.Setenv("LANGFUSE_HOST", "http://localhost:8080")
 		apiCalled := false
 
 		httpClient := NewTestClient(func(req *http.Request) *http.Response {
@@ -42,7 +42,7 @@ func TestNew(t *testing.T) {
 		}
 	})
 	t.Run("should fall back to use cloud.langfuse.com if no host is provided in the options of environment", func(t *testing.T) {
-		_ = t.Setenv("LANGFUSE_HOST", "")
+		t.Setenv("LANGFUSE_HOST", "")
 		apiCalled := false
 		httpClient := NewTestClient(func(req *http.Request) *http.Response {
 			apiCalled = true
