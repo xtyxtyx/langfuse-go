@@ -3,17 +3,17 @@ package langfuse_test
 import (
 	"context"
 	"encoding/base64"
-	"github.com/wepala/langfuse-go/langfuse"
 	"net/http"
-	"os"
 	"testing"
+
+	"github.com/wepala/langfuse-go/langfuse"
 )
 
 func TestNew(t *testing.T) {
 	t.Run("should use environment variables to setup api client if no options are provided", func(t *testing.T) {
-		_ = os.Setenv("LANGFUSE_PUBLIC_KEY", "public-key")
-		_ = os.Setenv("LANGFUSE_SECRET_KEY", "secret-key")
-		_ = os.Setenv("LANGFUSE_HOST", "http://localhost:8080")
+		_ = t.Setenv("LANGFUSE_PUBLIC_KEY", "public-key")
+		_ = t.Setenv("LANGFUSE_SECRET_KEY", "secret-key")
+		_ = t.Setenv("LANGFUSE_HOST", "http://localhost:8080")
 		apiCalled := false
 
 		httpClient := NewTestClient(func(req *http.Request) *http.Response {
@@ -42,7 +42,7 @@ func TestNew(t *testing.T) {
 		}
 	})
 	t.Run("should fall back to use cloud.langfuse.com if no host is provided in the options of environment", func(t *testing.T) {
-		_ = os.Setenv("LANGFUSE_HOST", "")
+		_ = t.Setenv("LANGFUSE_HOST", "")
 		apiCalled := false
 		httpClient := NewTestClient(func(req *http.Request) *http.Response {
 			apiCalled = true
@@ -85,7 +85,7 @@ func TestNew(t *testing.T) {
 
 func TestLangFuse_Trace(t *testing.T) {
 	t.Run("should return a trace object with a default id and default release and add trace event to queue", func(t *testing.T) {
-		os.Setenv("LANGFUSE_RELEASE", "default release")
+		t.Setenv("LANGFUSE_RELEASE", "default release")
 		eventManager := &EventManagerMock{
 			EnqueueFunc: func(id string, eventType string, tevent interface{}) error {
 				var ok bool
@@ -122,7 +122,7 @@ func TestLangFuse_Trace(t *testing.T) {
 		}
 	})
 	t.Run("should return a trace object with the id that was set", func(t *testing.T) {
-		os.Setenv("LANGFUSE_RELEASE", "default release")
+		t.Setenv("LANGFUSE_RELEASE", "default release")
 		eventManager := &EventManagerMock{
 			EnqueueFunc: func(id string, eventType string, tevent interface{}) error {
 				var ok bool
