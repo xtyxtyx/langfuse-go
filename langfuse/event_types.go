@@ -1,6 +1,7 @@
 package langfuse
 
 const TRACE_CREATE = "trace-create"
+const OBSERVATION_UPDATE = "observation-update"
 const SPAN_CREATE = "span-create"
 const SPAN_UPDATE = "span-update"
 const EVENT_CREATE = "event-create"

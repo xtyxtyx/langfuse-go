@@ -11,6 +11,7 @@ type Observation interface {
 	Event(opts *Event) (*Event, error)
 	Generation(opts *Generation) (*Generation, error)
 	Score(opts *Score) (*Score, error)
+	Update(opts Observation) (Observation, error)
 }
 
 type BasicObservation struct {
@@ -129,6 +130,12 @@ func (o BasicObservation) Score(opts *Score) (*Score, error) {
 	o.eventManager.Enqueue(opts.ID, SCORE_CREATE, opts)
 
 	return opts, nil
+}
+
+// Update the observation with new values
+func (o BasicObservation) Update(opts Observation) (Observation, error) {
+	err := o.eventManager.Enqueue(o.ID, OBSERVATION_UPDATE, opts)
+	return opts, err
 }
 
 type Span struct {

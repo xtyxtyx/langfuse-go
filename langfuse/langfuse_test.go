@@ -27,7 +27,7 @@ func TestNew(t *testing.T) {
 			}
 			return NewStringResponse(http.StatusOK, `test`)
 		})
-		sdk := langfuse.New(nil, langfuse.Options{HttpClient: httpClient})
+		sdk := langfuse.New(context.TODO(), langfuse.Options{HttpClient: httpClient})
 		if sdk == nil {
 			t.Fatal("expected sdk to be created")
 		}
@@ -51,7 +51,7 @@ func TestNew(t *testing.T) {
 			}
 			return NewStringResponse(http.StatusOK, `test`)
 		})
-		sdk := langfuse.New(nil, langfuse.Options{HttpClient: httpClient})
+		sdk := langfuse.New(context.TODO(), langfuse.Options{HttpClient: httpClient})
 		if sdk == nil {
 			t.Fatal("expected sdk to be created")
 		}
@@ -67,7 +67,7 @@ func TestNew(t *testing.T) {
 	})
 	t.Run("should create an event manager with the api client", func(t *testing.T) {
 
-		sdk := langfuse.New(nil, langfuse.Options{})
+		sdk := langfuse.New(context.TODO(), langfuse.Options{})
 		if sdk == nil {
 			t.Fatal("expected sdk to be created")
 		}
@@ -110,7 +110,7 @@ func TestLangFuse_Trace(t *testing.T) {
 				return nil
 			},
 		}
-		sdk := langfuse.New(nil, langfuse.Options{
+		sdk := langfuse.New(context.TODO(), langfuse.Options{
 			EventManager: eventManager,
 		})
 		trace, _ := sdk.Trace(context.Background(), &langfuse.Trace{})
@@ -140,7 +140,7 @@ func TestLangFuse_Trace(t *testing.T) {
 				return nil
 			},
 		}
-		sdk := langfuse.New(nil, langfuse.Options{
+		sdk := langfuse.New(context.TODO(), langfuse.Options{
 			EventManager: eventManager,
 		})
 		trace, _ := sdk.Trace(context.Background(), &langfuse.Trace{
@@ -179,7 +179,7 @@ func TestLangFuse_Span(t *testing.T) {
 				return nil
 			},
 		}
-		sdk := langfuse.New(nil, langfuse.Options{
+		sdk := langfuse.New(context.TODO(), langfuse.Options{
 			EventManager: eventManager,
 		})
 		span, err := sdk.Span(context.Background(), &langfuse.Span{})
@@ -214,7 +214,7 @@ func TestLangFuse_Span(t *testing.T) {
 				return nil
 			},
 		}
-		sdk := langfuse.New(nil, langfuse.Options{
+		sdk := langfuse.New(context.TODO(), langfuse.Options{
 			EventManager: eventManager,
 		})
 		span, err := sdk.Span(context.Background(), &langfuse.Span{
@@ -258,7 +258,7 @@ func TestLangFuse_Generation(t *testing.T) {
 				return nil
 			},
 		}
-		sdk := langfuse.New(nil, langfuse.Options{
+		sdk := langfuse.New(context.TODO(), langfuse.Options{
 			EventManager: eventManager,
 		})
 		generation, err := sdk.Generation(context.Background(), &langfuse.Generation{})
@@ -293,7 +293,7 @@ func TestLangFuse_Generation(t *testing.T) {
 				return nil
 			},
 		}
-		sdk := langfuse.New(nil, langfuse.Options{
+		sdk := langfuse.New(context.TODO(), langfuse.Options{
 			EventManager: eventManager,
 		})
 		generation, err := sdk.Generation(context.Background(), &langfuse.Generation{
@@ -337,7 +337,7 @@ func TestLangFuse_Score(t *testing.T) {
 				return nil
 			},
 		}
-		sdk := langfuse.New(nil, langfuse.Options{
+		sdk := langfuse.New(context.TODO(), langfuse.Options{
 			EventManager: eventManager,
 		})
 		score, err := sdk.Score(context.Background(), &langfuse.Score{
@@ -377,7 +377,7 @@ func TestLangFuse_Score(t *testing.T) {
 				return nil
 			},
 		}
-		sdk := langfuse.New(nil, langfuse.Options{
+		sdk := langfuse.New(context.TODO(), langfuse.Options{
 			EventManager: eventManager,
 		})
 		score, err := sdk.Score(context.Background(), &langfuse.Score{
@@ -407,7 +407,7 @@ func TestLangFuse_Score(t *testing.T) {
 				return nil
 			},
 		}
-		sdk := langfuse.New(nil, langfuse.Options{
+		sdk := langfuse.New(context.TODO(), langfuse.Options{
 			EventManager: eventManager,
 		})
 		score, err := sdk.Score(context.Background(), &langfuse.Score{
@@ -436,7 +436,7 @@ func TestLangFuse_Score(t *testing.T) {
 				return nil
 			},
 		}
-		sdk := langfuse.New(nil, langfuse.Options{
+		sdk := langfuse.New(context.TODO(), langfuse.Options{
 			EventManager: eventManager,
 		})
 		score, err := sdk.Score(context.Background(), &langfuse.Score{
