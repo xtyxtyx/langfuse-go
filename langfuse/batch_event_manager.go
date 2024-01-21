@@ -90,7 +90,7 @@ func (b *BatchEventManager) Flush(ctxt context.Context) {
 	var wg sync.WaitGroup
 	var queue *Queue
 	for _, queue = range b.Queues {
-		if len(queue.Events) == 0 {
+		if queue.nextEntry == 0 {
 			continue
 		}
 		wg.Add(1)

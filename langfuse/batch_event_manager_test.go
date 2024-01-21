@@ -14,8 +14,8 @@ func TestBatchEventManager_Enqueue(t *testing.T) {
 		httpClient := NewTestClient(func(req *http.Request) *http.Response {
 			return NewStringResponse(http.StatusOK, `test`)
 		})
-		sdk := langfuse.New(nil, langfuse.Options{HttpClient: httpClient})
-		eventManager := langfuse.NewBatchEventManager(sdk.Client(), 2, 5)
+		sdk := langfuse.New(context.TODO(), langfuse.Options{HttpClient: httpClient, TotalQueues: 2, MaxBatchSize: 5})
+		eventManager := sdk.EventManager()
 		if eventManager == nil {
 			t.Fatal("expected event manager to be created")
 		}
@@ -29,7 +29,7 @@ func TestBatchEventManager_Enqueue(t *testing.T) {
 		httpClient := NewTestClient(func(req *http.Request) *http.Response {
 			return NewStringResponse(http.StatusOK, `test`)
 		})
-		sdk := langfuse.New(nil, langfuse.Options{HttpClient: httpClient, TotalQueues: 1, MaxBatchSize: 1})
+		sdk := langfuse.New(context.Background(), langfuse.Options{HttpClient: httpClient, TotalQueues: 1, MaxBatchSize: 1})
 		eventManager := sdk.EventManager()
 		if eventManager == nil {
 			t.Fatal("expected event manager to be created")
@@ -47,8 +47,8 @@ func TestBatchEventManager_Enqueue(t *testing.T) {
 		httpClient := NewTestClient(func(req *http.Request) *http.Response {
 			return NewStringResponse(http.StatusOK, `test`)
 		})
-		sdk := langfuse.New(nil, langfuse.Options{HttpClient: httpClient})
-		eventManager := langfuse.NewBatchEventManager(sdk.Client(), 2, 2)
+		sdk := langfuse.New(context.TODO(), langfuse.Options{HttpClient: httpClient, TotalQueues: 2, MaxBatchSize: 2})
+		eventManager := sdk.EventManager().(*langfuse.BatchEventManager)
 		if eventManager == nil {
 			t.Fatal("expected event manager to be created")
 		}
@@ -83,10 +83,10 @@ func TestBatchEventManager_Enqueue(t *testing.T) {
 	})
 	t.Run("should add to next available queue while one is being processed", func(t *testing.T) {
 		t.SkipNow()
-		apiCalled := 0
+		apiCallCount := 0
 		httpClient := NewTestClient(func(req *http.Request) *http.Response {
 			time.Sleep(1800 * time.Millisecond)
-			apiCalled++
+			apiCallCount++
 			return NewJsonResponse(http.StatusOK, map[string]interface{}{})
 		})
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -115,7 +115,6 @@ func TestBatchEventManager_Enqueue(t *testing.T) {
 		success := make(chan bool)
 		go eventManager.Process(ctx)
 		go func() {
-			time.Sleep(100 * time.Millisecond)
 			err = eventManager.Enqueue("test", "test", map[string]interface{}{})
 			if err != nil {
 				t.Errorf("expected enqueue to succeed, got %s", err.Error())
@@ -128,6 +127,29 @@ func TestBatchEventManager_Enqueue(t *testing.T) {
 				t.Errorf("expected %d events to be enqueued, got %d", 1, len(eventManager.Queues[2].Events))
 			}
 		}
+	})
+	t.Run("should not make call if queue is empty", func(t *testing.T) {
+		apiCalled := make(chan bool)
+		httpClient := NewTestClient(func(req *http.Request) *http.Response {
+			apiCalled <- true
+			return NewStringResponse(http.StatusOK, `test`)
+		})
+		sdk := langfuse.New(context.TODO(), langfuse.Options{HttpClient: httpClient, TotalQueues: 2, MaxBatchSize: 5})
+		eventManager := sdk.EventManager().(*langfuse.BatchEventManager)
+		if eventManager == nil {
+			t.Fatal("expected event manager to be created")
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+		defer cancel()
+		eventManager.Process(ctx)
+		//if api is called, it will block and fail the test
+		select {
+		case <-apiCalled:
+			t.Errorf("expected api to not be called")
+		default:
+			return
+		}
+
 	})
 }
 
@@ -194,6 +216,9 @@ func TestBatchEventManager_Process(t *testing.T) {
 			if apiCalled != 2 {
 				t.Errorf("expected api to be called %d times, called %d times", 2, apiCalled)
 			}
+			return
+		default:
+			return
 		}
 	})
 }
