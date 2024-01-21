@@ -98,7 +98,7 @@ func (b *BatchEventManager) Flush(ctxt context.Context) {
 			defer wg.Done()
 			defer q.mu.Unlock()
 			q.mu.Lock()
-			resp, err := b.Client.Ingestion.Batch(ctxt, &api.IngestionBatchRequest{Batch: q.Events})
+			resp, err := b.Client.Ingestion.Batch(ctxt, &api.IngestionBatchRequest{Batch: q.Events[:q.nextEntry-1]})
 			if err != nil {
 				//TODO log error
 				return

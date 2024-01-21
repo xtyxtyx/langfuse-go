@@ -2,6 +2,7 @@ package langfuse_test
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/wepala/langfuse-go/langfuse"
 	"net/http"
 	"sync"
@@ -128,29 +129,7 @@ func TestBatchEventManager_Enqueue(t *testing.T) {
 			}
 		}
 	})
-	t.Run("should not make call if queue is empty", func(t *testing.T) {
-		apiCalled := make(chan bool)
-		httpClient := NewTestClient(func(req *http.Request) *http.Response {
-			apiCalled <- true
-			return NewStringResponse(http.StatusOK, `test`)
-		})
-		sdk := langfuse.New(context.TODO(), langfuse.Options{HttpClient: httpClient, TotalQueues: 2, MaxBatchSize: 5})
-		eventManager := sdk.EventManager().(*langfuse.BatchEventManager)
-		if eventManager == nil {
-			t.Fatal("expected event manager to be created")
-		}
-		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
-		defer cancel()
-		eventManager.Process(ctx)
-		//if api is called, it will block and fail the test
-		select {
-		case <-apiCalled:
-			t.Errorf("expected api to not be called")
-		default:
-			return
-		}
 
-	})
 }
 
 func TestBatchEventManager_Process(t *testing.T) {
@@ -220,5 +199,56 @@ func TestBatchEventManager_Process(t *testing.T) {
 		default:
 			return
 		}
+	})
+	t.Run("should not make call if queue is empty", func(t *testing.T) {
+		apiCalled := make(chan bool)
+		httpClient := NewTestClient(func(req *http.Request) *http.Response {
+			apiCalled <- true
+			return NewStringResponse(http.StatusOK, `test`)
+		})
+		sdk := langfuse.New(context.TODO(), langfuse.Options{HttpClient: httpClient, TotalQueues: 2, MaxBatchSize: 5})
+		eventManager := sdk.EventManager().(*langfuse.BatchEventManager)
+		if eventManager == nil {
+			t.Fatal("expected event manager to be created")
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+		defer cancel()
+		eventManager.Process(ctx)
+		//if api is called, it will block and fail the test
+		select {
+		case <-apiCalled:
+			t.Errorf("expected api to not be called")
+		default:
+			return
+		}
+
+	})
+	t.Run("should not make call with events that are null", func(t *testing.T) {
+		apiCalled := make(chan bool)
+		httpClient := NewTestClient(func(req *http.Request) *http.Response {
+			apiCalled <- true
+			payload := make(map[string]interface{})
+			err := json.NewDecoder(req.Body).Decode(&payload)
+			if err != nil {
+				t.Fatalf("expected payload to be decoded, got %s", err.Error())
+			}
+			if len(payload["batch"].([]interface{})) > 1 {
+				t.Errorf("expected payload to be empty, got %d events", len(payload["batch"].([]interface{})))
+			}
+			return NewStringResponse(http.StatusOK, `test`)
+		})
+		sdk := langfuse.New(context.TODO(), langfuse.Options{HttpClient: httpClient, TotalQueues: 2, MaxBatchSize: 5})
+		eventManager := sdk.EventManager().(*langfuse.BatchEventManager)
+		if eventManager == nil {
+			t.Fatal("expected event manager to be created")
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+		defer cancel()
+		err := eventManager.Enqueue("test", "test", map[string]interface{}{})
+		if err != nil {
+			t.Fatalf("expected enqueue to succeed, got %s", err.Error())
+		}
+		eventManager.Process(ctx)
+
 	})
 }
