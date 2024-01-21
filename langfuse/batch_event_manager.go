@@ -101,7 +101,7 @@ func (b *BatchEventManager) Flush(ctxt context.Context) {
 			if q.nextEntry == 0 {
 				return
 			}
-			resp, err := b.Client.Ingestion.Batch(ctxt, &api.IngestionBatchRequest{Batch: q.Events[:q.nextEntry-1]})
+			resp, err := b.Client.Ingestion.Batch(ctxt, &api.IngestionBatchRequest{Batch: q.Events[:q.nextEntry]})
 			if err != nil {
 				//TODO log error
 				return
