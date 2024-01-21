@@ -3,8 +3,10 @@ package langfuse_test
 import (
 	"context"
 	"encoding/base64"
+	"encoding/json"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/wepala/langfuse-go/langfuse"
 )
@@ -155,6 +157,38 @@ func TestLangFuse_Trace(t *testing.T) {
 			t.Errorf("expected event to be added to queue")
 		}
 	})
+	t.Run("should process a typical set of events", func(t *testing.T) {
+		apiCalled := 0
+		httpClient := NewTestClient(func(req *http.Request) *http.Response {
+			apiCalled++
+			var payload map[string]interface{}
+			_ = json.NewDecoder(req.Body).Decode(&payload)
+			if len(payload["batch"].([]interface{})) != 2 {
+				t.Errorf("expected payload to have %d events, got %d", 2, len(payload["batch"].([]interface{})))
+			}
+			return NewJsonResponse(http.StatusOK, map[string]interface{}{})
+		})
+		ctx, cancel := context.WithTimeout(context.Background(), 320*time.Second)
+		defer cancel()
+		sdk := langfuse.New(ctx, langfuse.Options{HttpClient: httpClient, TotalQueues: 3, MaxBatchSize: 20})
+		eventManager := sdk.EventManager().(*langfuse.BatchEventManager)
+		trace, err := sdk.Trace(context.TODO(), &langfuse.Trace{
+			BasicObservation: langfuse.BasicObservation{
+				ID: "test",
+			},
+		})
+		if trace == nil {
+			t.Fatalf("expected trace to be created")
+		}
+		if err != nil {
+			t.Fatalf("expected error to be nil")
+		}
+		span, err := trace.Span(&langfuse.Span{})
+		if span == nil {
+			t.Fatalf("expected span to be created")
+		}
+		eventManager.Flush(ctx)
+	})
 }
 
 func TestLangFuse_Span(t *testing.T) {
@@ -195,7 +229,6 @@ func TestLangFuse_Span(t *testing.T) {
 			t.Errorf("expected event to be added to queue")
 		}
 	})
-
 	t.Run("should return a span object with the id that was set", func(t *testing.T) {
 		eventManager := &EventManagerMock{
 			EnqueueFunc: func(id string, eventType string, tevent interface{}) error {

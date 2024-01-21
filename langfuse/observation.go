@@ -140,15 +140,16 @@ func (o BasicObservation) Update(opts Observation) (Observation, error) {
 
 type Span struct {
 	BasicObservation
-	StartTime time.Time `json:"startTime,omitempty"`
-	EndTime   time.Time `json:"endTime,omitempty"`
+	StartTime time.Time  `json:"startTime,omitempty"`
+	EndTime   *time.Time `json:"endTime,omitempty"`
 }
 
 func (s *Span) End() error {
 	if s.ID == "" {
 		return errors.New("span id is not set")
 	}
-	s.EndTime = time.Now()
+	now := time.Now()
+	s.EndTime = &now
 	s.eventManager.Enqueue(s.ID, SPAN_UPDATE, s)
 	return nil
 }
@@ -160,7 +161,7 @@ type Generation struct {
 	Usage               map[string]interface{} `json:"usage,omitempty"`
 	ModelParameters     map[string]interface{} `json:"modelParameters,omitempty"`
 	StartTime           time.Time              `json:"startTime,omitempty"`
-	EndTime             time.Time              `json:"endTime,omitempty"`
+	EndTime             *time.Time             `json:"endTime,omitempty"`
 	PromptName          string                 `json:"promptName,omitempty"`
 	PromptVersion       string                 `json:"promptVersion,omitempty"`
 }
@@ -169,7 +170,8 @@ func (g *Generation) End() error {
 	if g.ID == "" {
 		return errors.New("span id is not set")
 	}
-	g.EndTime = time.Now()
+	now := time.Now()
+	g.EndTime = &now
 	err := g.eventManager.Enqueue(g.ID, GENERATION_UPDATE, g)
 	return err
 }

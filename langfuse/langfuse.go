@@ -126,6 +126,19 @@ func (l *LangFuse) Score(ctxt context.Context, opts *Score) (*Score, error) {
 	return opts, nil
 }
 
+func (l *LangFuse) Start(ctxt context.Context) {
+	if l.eventManager != nil {
+		if ctxt == nil {
+			ctxt = context.Background()
+		}
+		tctxt, cancel := context.WithCancel(ctxt)
+		if batchEventManager, ok := l.eventManager.(*BatchEventManager); ok {
+			go batchEventManager.Process(tctxt)
+		}
+		l.Shutdown = cancel
+	}
+}
+
 func New(ctxt context.Context, options Options) *LangFuse {
 	if options.PublicKey == "" {
 		options.PublicKey = os.Getenv("LANGFUSE_PUBLIC_KEY")
@@ -159,15 +172,5 @@ func New(ctxt context.Context, options Options) *LangFuse {
 		client:       tclient,
 		eventManager: options.EventManager,
 	}
-
-	if batchEventManager != nil {
-		if ctxt == nil {
-			ctxt = context.Background()
-		}
-		tctxt, cancel := context.WithCancel(ctxt)
-		go batchEventManager.Process(tctxt)
-		lf.Shutdown = cancel
-	}
-
 	return lf
 }

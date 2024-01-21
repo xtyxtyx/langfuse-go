@@ -107,21 +107,24 @@ func (b *BatchEventManager) Flush(ctxt context.Context) {
 				return
 			}
 			if len(resp.Errors) > 0 {
-				//update the queue to only contain the events that were not sent
-				var events []interface{}
-				for _, event := range q.Events {
-					if event == nil {
-						continue
-					}
-					for _, ingestionError := range resp.Errors {
-						if event.(map[string]interface{})["id"] == ingestionError.Id {
-							events = append(events, event)
-						}
-					}
-				}
-				q.Events = events
-				return
+				log.Printf("error sending batch: %v", resp.Errors)
 			}
+			//if len(resp.Errors) > 0 {
+			//	//update the queue to only contain the events that were not sent
+			//	var events []interface{}
+			//	for _, event := range q.Events {
+			//		if event == nil {
+			//			continue
+			//		}
+			//		for _, ingestionError := range resp.Errors {
+			//			if event.(map[string]interface{})["id"] == ingestionError.Id {
+			//				events = append(events, event)
+			//			}
+			//		}
+			//	}
+			//	q.Events = events
+			//	return
+			//}
 			q.Reset()
 		}(queue)
 	}
