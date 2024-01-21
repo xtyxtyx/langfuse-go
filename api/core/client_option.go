@@ -36,7 +36,7 @@ func NewClientOptions() *ClientOptions {
 func (c *ClientOptions) ToHeader() http.Header {
 	header := c.cloneHeader()
 	if c.Username != "" && c.Password != "" {
-		header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(c.Username+": "+c.Password)))
+		header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(c.Username+":"+c.Password)))
 	}
 	return header
 }
