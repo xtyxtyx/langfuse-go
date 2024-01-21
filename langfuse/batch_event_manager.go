@@ -110,8 +110,11 @@ func (b *BatchEventManager) Flush(ctxt context.Context) {
 				//update the queue to only contain the events that were not sent
 				var events []interface{}
 				for _, event := range q.Events {
-					for _, err := range resp.Errors {
-						if event.(map[string]interface{})["id"] == err.Id {
+					if event == nil {
+						continue
+					}
+					for _, ingestionError := range resp.Errors {
+						if event.(map[string]interface{})["id"] == ingestionError.Id {
 							events = append(events, event)
 						}
 					}
