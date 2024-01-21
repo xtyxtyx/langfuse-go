@@ -11,21 +11,30 @@ import (
 )
 
 type Queue struct {
-	id     int
-	Events []interface{}
-	mu     sync.Mutex
+	id        int
+	Events    []interface{}
+	nextEntry int
+	mu        sync.Mutex
+	maxItems  int
+}
+
+func (q *Queue) Reset() {
+	q.Events = make([]interface{}, q.maxItems)
+	q.nextEntry = 0
 }
 
 func NewBatchEventManager(client *client.Client, totalQueues int, maxBatchItems int) *BatchEventManager {
 	var queues []*Queue
-	for i := 0; i < totalQueues; i++ {
-		queues = append(queues, &Queue{id: i})
-	}
+
 	if maxBatchItems == 0 {
 		maxBatchItems = 100
 	}
 	if totalQueues == 0 {
 		totalQueues = 10
+	}
+
+	for i := 0; i < totalQueues; i++ {
+		queues = append(queues, &Queue{id: i, Events: make([]interface{}, maxBatchItems), maxItems: maxBatchItems})
 	}
 	return &BatchEventManager{
 		Client:        client,
@@ -45,16 +54,17 @@ func (b *BatchEventManager) Enqueue(id string, eventType string, event interface
 	var queue *Queue
 	for _, queue = range b.Queues {
 		queue.mu.Lock()
-		if len(queue.Events) >= b.maxBatchItems {
+		if queue.nextEntry == b.maxBatchItems {
 			continue
 		}
-		queue.Events = append(queue.Events, map[string]interface{}{
+		queue.Events[queue.nextEntry] = map[string]interface{}{
 			"id":        id,
 			"type":      eventType,
 			"body":      event,
 			"timestamp": time.Now().UTC().Format(time.RFC3339),
-		})
-		log.Printf("add to queue %d,queue length %d, max %d", queue.id, len(queue.Events), b.maxBatchItems)
+		}
+		queue.nextEntry++
+		log.Printf("add to queue %d,queue length %d, max %d", queue.id, queue.nextEntry, b.maxBatchItems)
 		queue.mu.Unlock()
 		return nil
 	}
@@ -106,7 +116,7 @@ func (b *BatchEventManager) Flush(ctxt context.Context) {
 				q.Events = events
 				return
 			}
-			q.Events = nil
+			q.Reset()
 		}(queue)
 	}
 }

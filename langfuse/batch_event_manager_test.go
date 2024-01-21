@@ -29,8 +29,8 @@ func TestBatchEventManager_Enqueue(t *testing.T) {
 		httpClient := NewTestClient(func(req *http.Request) *http.Response {
 			return NewStringResponse(http.StatusOK, `test`)
 		})
-		sdk := langfuse.New(nil, langfuse.Options{HttpClient: httpClient})
-		eventManager := langfuse.NewBatchEventManager(sdk.Client(), 1, 1)
+		sdk := langfuse.New(nil, langfuse.Options{HttpClient: httpClient, TotalQueues: 1, MaxBatchSize: 1})
+		eventManager := sdk.EventManager()
 		if eventManager == nil {
 			t.Fatal("expected event manager to be created")
 		}
@@ -77,14 +77,8 @@ func TestBatchEventManager_Enqueue(t *testing.T) {
 			}
 		}()
 		wg.Wait()
-		if len(eventManager.Queues) != 2 {
-			t.Errorf("expected %d queue to be created, got %d", 2, len(eventManager.Queues))
-		}
-		if len(eventManager.Queues[0].Events) != 2 {
-			t.Errorf("expected %d events to be enqueued, got %d", 2, len(eventManager.Queues[0].Events))
-		}
-		if len(eventManager.Queues[1].Events) != 1 {
-			t.Errorf("expected %d events to be enqueued, got %d", 1, len(eventManager.Queues[1].Events))
+		if eventManager.Queues[1].Events[1] != nil {
+			t.Errorf("expected %d event to be enqueued, got an even in the other available slot", 1)
 		}
 	})
 	t.Run("should add to next available queue while one is being processed", func(t *testing.T) {

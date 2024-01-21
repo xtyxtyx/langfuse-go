@@ -19,7 +19,7 @@ func TestNew(t *testing.T) {
 		httpClient := NewTestClient(func(req *http.Request) *http.Response {
 			apiCalled = true
 			//check that the expected headers are sent
-			if req.Header.Get("Authorization") != "Basic "+base64.StdEncoding.EncodeToString([]byte("public-key: secret-key")) {
+			if req.Header.Get("Authorization") != "Basic "+base64.StdEncoding.EncodeToString([]byte("public-key:secret-key")) {
 				t.Errorf("expected Authorization header to be set")
 			}
 			if req.URL.Host != "localhost:8080" {
