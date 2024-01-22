@@ -2,6 +2,7 @@ package langfuse
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/wepala/langfuse-go/api"
 	"github.com/wepala/langfuse-go/api/client"
@@ -57,10 +58,17 @@ func (b *BatchEventManager) Enqueue(id string, eventType string, event interface
 		if queue.nextEntry == b.maxBatchItems {
 			continue
 		}
+		//convert to a simple map since using the observation objects isn't safe for concurrent use
+		bodyBytes, err := json.Marshal(event)
+		if err != nil {
+			return err
+		}
+		var body map[string]interface{}
+		err = json.Unmarshal(bodyBytes, &body)
 		queue.Events[queue.nextEntry] = map[string]interface{}{
 			"id":        id,
 			"type":      eventType,
-			"body":      event,
+			"body":      body,
 			"timestamp": time.Now().UTC().Format(time.RFC3339),
 		}
 		queue.nextEntry++
