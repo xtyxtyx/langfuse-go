@@ -2,11 +2,11 @@ package langfuse
 
 type Trace struct {
 	BasicObservation
-	UserID    string   `json:"userId"`
-	SessionID string   `json:"sessionId"`
-	Version   string   `json:"version"`
-	Release   string   `json:"release"`
-	Tags      []string `json:"tags"`
+	UserID    string   `json:"userId,omitempty"`
+	SessionID string   `json:"sessionId,omitempty"`
+	Version   string   `json:"version,omitempty"`
+	Release   string   `json:"release,omitempty"`
+	Tags      []string `json:"tags,omitempty"`
 	Public    bool     `json:"public"`
 }
 
