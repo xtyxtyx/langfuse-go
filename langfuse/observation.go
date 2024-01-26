@@ -37,13 +37,13 @@ func (o BasicObservation) Span(span *Span) (*Span, error) {
 		span.ID = ksuid.New().String()
 	}
 
-	//if span.ParentID == "" {
-	//	span.ParentID = o.ID
-	//}
-
-	if span.TraceID == "" {
-		span.TraceID = o.TraceID
+	if span.ParentID == "" {
+		span.ParentID = o.ID
 	}
+
+	//if span.TraceID == "" {
+	//	span.TraceID = o.TraceID
+	//}
 
 	if span.StartTime.IsZero() {
 		span.StartTime = time.Now()
@@ -91,13 +91,13 @@ func (o BasicObservation) Generation(generation *Generation) (*Generation, error
 		generation.ID = ksuid.New().String()
 	}
 
-	//if generation.ParentID == "" {
-	//	generation.ParentID = o.ID
-	//}
-
-	if generation.TraceID == "" {
-		generation.TraceID = o.TraceID
+	if generation.ParentID == "" {
+		generation.ParentID = o.ID
 	}
+
+	//if generation.TraceID == "" {
+	//	generation.TraceID = o.TraceID
+	//}
 
 	if generation.StartTime.IsZero() {
 		generation.StartTime = time.Now()
