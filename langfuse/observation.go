@@ -65,7 +65,8 @@ func (o BasicObservation) Event(opts *Event) (*Event, error) {
 		opts.ID = ksuid.New().String()
 	}
 
-	if opts.ParentID == "" {
+	//only set the parent id if it is not set and the parent is not the trace
+	if opts.ParentID == "" && o.ID != o.TraceID && o.ID != opts.TraceID {
 		opts.ParentID = o.ID
 	}
 
