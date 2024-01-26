@@ -37,7 +37,8 @@ func (o BasicObservation) Span(span *Span) (*Span, error) {
 		span.ID = ksuid.New().String()
 	}
 
-	if span.ParentID == "" {
+	//only set the parent id if it is not set and the parent is not the trace
+	if span.ParentID == "" && o.ID != o.TraceID {
 		span.ParentID = o.ID
 	}
 
