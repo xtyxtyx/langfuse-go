@@ -2,8 +2,8 @@ package langfuse
 
 type Trace struct {
 	BasicObservation
-	UserID    string   `json:"user_id"`
-	SessionID string   `json:"session_id"`
+	UserID    string   `json:"userId"`
+	SessionID string   `json:"sessionId"`
 	Version   string   `json:"version"`
 	Release   string   `json:"release"`
 	Tags      []string `json:"tags"`
