@@ -38,7 +38,7 @@ func (o BasicObservation) Span(span *Span) (*Span, error) {
 	}
 
 	//only set the parent id if it is not set and the parent is not the trace
-	if span.ParentID == "" && o.ID != o.TraceID {
+	if span.ParentID == "" && o.ID != o.TraceID && o.ID != span.TraceID {
 		span.ParentID = o.ID
 	}
 
@@ -92,7 +92,8 @@ func (o BasicObservation) Generation(generation *Generation) (*Generation, error
 		generation.ID = ksuid.New().String()
 	}
 
-	if generation.ParentID == "" {
+	//only set the parent id if it is not set and the parent is not the trace
+	if generation.ParentID == "" && o.ID != o.TraceID && o.ID != generation.TraceID {
 		generation.ParentID = o.ID
 	}
 
