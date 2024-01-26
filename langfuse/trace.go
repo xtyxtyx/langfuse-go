@@ -21,3 +21,27 @@ func (o Trace) Span(span *Span) (*Span, error) {
 
 	return o.BasicObservation.Span(span)
 }
+
+func (o Trace) Event(event *Event) (*Event, error) {
+	if event == nil {
+		event = &Event{}
+	}
+
+	if event.TraceID == "" {
+		event.TraceID = o.ID
+	}
+
+	return o.BasicObservation.Event(event)
+}
+
+func (o Trace) Generation(generation *Generation) (*Generation, error) {
+	if generation == nil {
+		generation = &Generation{}
+	}
+
+	if generation.TraceID == "" {
+		generation.TraceID = o.ID
+	}
+
+	return o.BasicObservation.Generation(generation)
+}
