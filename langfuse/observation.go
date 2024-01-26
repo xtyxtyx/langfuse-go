@@ -41,9 +41,9 @@ func (o BasicObservation) Span(span *Span) (*Span, error) {
 		span.ParentID = o.ID
 	}
 
-	//if span.TraceID == "" {
-	//	span.TraceID = o.TraceID
-	//}
+	if span.TraceID == "" {
+		span.TraceID = o.TraceID
+	}
 
 	if span.StartTime.IsZero() {
 		span.StartTime = time.Now()
@@ -95,9 +95,9 @@ func (o BasicObservation) Generation(generation *Generation) (*Generation, error
 		generation.ParentID = o.ID
 	}
 
-	//if generation.TraceID == "" {
-	//	generation.TraceID = o.TraceID
-	//}
+	if generation.TraceID == "" {
+		generation.TraceID = o.TraceID
+	}
 
 	if generation.StartTime.IsZero() {
 		generation.StartTime = time.Now()
