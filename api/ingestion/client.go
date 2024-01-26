@@ -82,7 +82,8 @@ func (c *Client) Batch(ctx context.Context, request *api.IngestionBatchRequest) 
 
 	var response *api.IngestionResponse
 	//log the request as json
-	log.Printf("request: %v", request)
+	payload, _ := json.Marshal(request)
+	log.Printf("request: %s", payload)
 	if err := core.DoRequest(
 		ctx,
 		c.httpClient,
