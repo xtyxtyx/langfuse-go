@@ -10,7 +10,6 @@ import (
 	api "github.com/wepala/langfuse-go/api"
 	core "github.com/wepala/langfuse-go/api/core"
 	io "io"
-	"log"
 	http "net/http"
 )
 
@@ -82,8 +81,8 @@ func (c *Client) Batch(ctx context.Context, request *api.IngestionBatchRequest) 
 
 	var response *api.IngestionResponse
 	//log the request as json
-	payload, _ := json.Marshal(request)
-	log.Printf("request: %s", payload)
+	//payload, _ := json.Marshal(request)
+	//log.Printf("request: %s", payload)
 	if err := core.DoRequest(
 		ctx,
 		c.httpClient,
