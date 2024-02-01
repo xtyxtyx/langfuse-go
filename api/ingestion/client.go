@@ -10,6 +10,7 @@ import (
 	api "github.com/wepala/langfuse-go/api"
 	core "github.com/wepala/langfuse-go/api/core"
 	io "io"
+	"log"
 	http "net/http"
 )
 
@@ -94,6 +95,7 @@ func (c *Client) Batch(ctx context.Context, request *api.IngestionBatchRequest) 
 		c.header,
 		errorDecoder,
 	); err != nil {
+		log.Printf("langfuse error: %s", err.Error())
 		return response, err
 	}
 	return response, nil
