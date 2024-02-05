@@ -115,7 +115,7 @@ func (b *BatchEventManager) Flush(ctxt context.Context) {
 				return
 			}
 			if len(resp.Errors) > 0 {
-				log.Printf("error sending batch: %v", resp.Errors)
+				log.Printf("error sending batch: %v", &resp.Errors)
 			}
 			//if len(resp.Errors) > 0 {
 			//	//update the queue to only contain the events that were not sent
