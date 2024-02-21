@@ -111,7 +111,7 @@ func (b *BatchEventManager) Flush(ctxt context.Context) {
 			}
 			resp, _ := b.Client.Ingestion.Batch(ctxt, &api.IngestionBatchRequest{Batch: q.Events[:q.nextEntry]})
 
-			if len(resp.Errors) > 0 {
+			if resp != nil && len(resp.Errors) > 0 {
 				log.Printf("error sending batch: %v", &resp.Errors)
 			}
 			//if len(resp.Errors) > 0 {
