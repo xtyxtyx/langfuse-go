@@ -56,6 +56,7 @@ func (b *BatchEventManager) Enqueue(id string, eventType string, event interface
 	for _, queue = range b.Queues {
 		queue.mu.Lock()
 		if queue.nextEntry == b.maxBatchItems {
+			queue.mu.Unlock()
 			continue
 		}
 		//convert to a simple map since using the observation objects isn't safe for concurrent use
