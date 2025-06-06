@@ -2,8 +2,9 @@ package langfuse
 
 import (
 	"errors"
-	"github.com/segmentio/ksuid"
 	"time"
+
+	"github.com/segmentio/ksuid"
 )
 
 type Observation interface {
@@ -135,16 +136,26 @@ func (o BasicObservation) Score(opts *Score) (*Score, error) {
 	return opts, nil
 }
 
-// Update the observation with new values
-func (o BasicObservation) Update(opts Observation) (Observation, error) {
-	err := o.eventManager.Enqueue(o.ID, OBSERVATION_UPDATE, opts)
-	return opts, err
-}
+// // Update the observation with new values
+// func (o BasicObservation) Update(opts Observation) (Observation, error) {
+// 	err := o.eventManager.Enqueue(o.ID, OBSERVATION_UPDATE, opts)
+// 	return opts, err
+// }
 
 type Span struct {
 	BasicObservation
 	StartTime time.Time  `json:"startTime,omitempty"`
 	EndTime   *time.Time `json:"endTime,omitempty"`
+}
+
+func (s *Span) Update(opts *Span) error {
+	if s.ID == "" {
+		return errors.New("span id is not set")
+	}
+
+	s.eventManager.Enqueue(s.ID, SPAN_UPDATE, s)
+
+	return nil
 }
 
 func (s *Span) End() error {
@@ -167,6 +178,15 @@ type Generation struct {
 	EndTime             *time.Time             `json:"endTime,omitempty"`
 	PromptName          string                 `json:"promptName,omitempty"`
 	PromptVersion       string                 `json:"promptVersion,omitempty"`
+}
+
+func (g *Generation) Update(opts *Generation) error {
+	if g.ID == "" {
+		return errors.New("generation id is not set")
+	}
+
+	g.eventManager.Enqueue(g.ID, GENERATION_UPDATE, g)
+	return nil
 }
 
 func (g *Generation) End() error {

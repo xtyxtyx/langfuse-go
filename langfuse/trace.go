@@ -1,5 +1,7 @@
 package langfuse
 
+import "errors"
+
 type Trace struct {
 	BasicObservation
 	UserID    string   `json:"userId,omitempty"`
@@ -8,6 +10,15 @@ type Trace struct {
 	Release   string   `json:"release,omitempty"`
 	Tags      []string `json:"tags,omitempty"`
 	Public    bool     `json:"public"`
+}
+
+func (o Trace) Update(opts *Trace) error {
+	if o.ID == "" {
+		return errors.New("trace id is not set")
+	}
+
+	o.eventManager.Enqueue(o.ID, TRACE_CREATE, opts)
+	return nil
 }
 
 func (o Trace) Span(span *Span) (*Span, error) {
