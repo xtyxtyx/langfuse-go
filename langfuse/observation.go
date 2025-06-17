@@ -52,7 +52,7 @@ func (o BasicObservation) Span(span *Span) (*Span, error) {
 	}
 
 	span.eventManager = o.eventManager
-	err := o.eventManager.Enqueue(span.ID, SPAN_CREATE, span)
+	err := o.eventManager.Enqueue("", SPAN_CREATE, span)
 
 	return span, err
 }
@@ -80,7 +80,7 @@ func (o BasicObservation) Event(opts *Event) (*Event, error) {
 	}
 
 	opts.eventManager = o.eventManager
-	o.eventManager.Enqueue(opts.ID, EVENT_CREATE, opts)
+	o.eventManager.Enqueue("", EVENT_CREATE, opts)
 
 	return opts, nil
 }
@@ -108,7 +108,7 @@ func (o BasicObservation) Generation(generation *Generation) (*Generation, error
 	}
 
 	generation.eventManager = o.eventManager
-	err := o.eventManager.Enqueue(generation.ID, GENERATION_CREATE, generation)
+	err := o.eventManager.Enqueue("", GENERATION_CREATE, generation)
 
 	return generation, err
 }
@@ -131,14 +131,14 @@ func (o BasicObservation) Score(opts *Score) (*Score, error) {
 	}
 
 	opts.eventManager = o.eventManager
-	o.eventManager.Enqueue(opts.ID, SCORE_CREATE, opts)
+	o.eventManager.Enqueue("", SCORE_CREATE, opts)
 
 	return opts, nil
 }
 
 // // Update the observation with new values
 // func (o BasicObservation) Update(opts Observation) (Observation, error) {
-// 	err := o.eventManager.Enqueue(o.ID, OBSERVATION_UPDATE, opts)
+// 	err := o.eventManager.Enqueue("", OBSERVATION_UPDATE, opts)
 // 	return opts, err
 // }
 
@@ -153,7 +153,7 @@ func (s *Span) Update() error {
 		return errors.New("span id is not set")
 	}
 
-	s.eventManager.Enqueue(s.ID, SPAN_UPDATE, s)
+	s.eventManager.Enqueue("", SPAN_UPDATE, s)
 
 	return nil
 }
@@ -164,7 +164,7 @@ func (s *Span) End() error {
 	}
 	now := time.Now()
 	s.EndTime = &now
-	s.eventManager.Enqueue(s.ID, SPAN_UPDATE, s)
+	s.eventManager.Enqueue("", SPAN_UPDATE, s)
 	return nil
 }
 
@@ -185,7 +185,7 @@ func (g *Generation) Update() error {
 		return errors.New("generation id is not set")
 	}
 
-	g.eventManager.Enqueue(g.ID, GENERATION_UPDATE, g)
+	g.eventManager.Enqueue("", GENERATION_UPDATE, g)
 	return nil
 }
 
@@ -195,7 +195,7 @@ func (g *Generation) End() error {
 	}
 	now := time.Now()
 	g.EndTime = &now
-	err := g.eventManager.Enqueue(g.ID, GENERATION_UPDATE, g)
+	err := g.eventManager.Enqueue("", GENERATION_UPDATE, g)
 	return err
 }
 

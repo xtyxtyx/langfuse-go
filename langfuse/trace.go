@@ -17,7 +17,7 @@ func (o Trace) Update() error {
 		return errors.New("trace id is not set")
 	}
 
-	o.eventManager.Enqueue(o.ID, TRACE_CREATE, o)
+	o.eventManager.Enqueue("", TRACE_CREATE, o)
 	return nil
 }
 

@@ -4,11 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/wepala/langfuse-go/api"
-	"github.com/wepala/langfuse-go/api/client"
 	"log"
 	"sync"
 	"time"
+
+	"github.com/segmentio/ksuid"
+	"github.com/wepala/langfuse-go/api"
+	"github.com/wepala/langfuse-go/api/client"
 )
 
 type Queue struct {
@@ -51,6 +53,10 @@ type BatchEventManager struct {
 }
 
 func (b *BatchEventManager) Enqueue(id string, eventType string, event interface{}) error {
+	if id == "" {
+		id = ksuid.New().String()
+	}
+
 	//find the next available queue
 	var queue *Queue
 	for _, queue = range b.Queues {

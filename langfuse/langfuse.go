@@ -3,11 +3,12 @@ package langfuse
 import (
 	"context"
 	"fmt"
-	"github.com/segmentio/ksuid"
-	"github.com/wepala/langfuse-go/api/client"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/segmentio/ksuid"
+	"github.com/wepala/langfuse-go/api/client"
 )
 
 type Options struct {
@@ -50,7 +51,7 @@ func (l *LangFuse) Trace(ctxt context.Context, opts *Trace) (*Trace, error) {
 
 	opts.eventManager = l.eventManager
 
-	err := l.eventManager.Enqueue(opts.ID, TRACE_CREATE, opts)
+	err := l.eventManager.Enqueue("", TRACE_CREATE, opts)
 	return opts, err
 }
 
@@ -67,7 +68,7 @@ func (l *LangFuse) Span(ctxt context.Context, opts *Span) (*Span, error) {
 		opts.StartTime = time.Now()
 	}
 
-	l.eventManager.Enqueue(opts.ID, SPAN_CREATE, opts)
+	l.eventManager.Enqueue("", SPAN_CREATE, opts)
 	return opts, nil
 }
 
@@ -84,7 +85,7 @@ func (l *LangFuse) Event(ctxt context.Context, opts *Event) (*Event, error) {
 		opts.StartTime = time.Now()
 	}
 
-	l.eventManager.Enqueue(opts.ID, EVENT_CREATE, opts)
+	l.eventManager.Enqueue("", EVENT_CREATE, opts)
 	return opts, nil
 }
 
@@ -101,7 +102,7 @@ func (l *LangFuse) Generation(ctxt context.Context, opts *Generation) (*Generati
 		opts.StartTime = time.Now()
 	}
 
-	l.eventManager.Enqueue(opts.ID, GENERATION_CREATE, opts)
+	l.eventManager.Enqueue("", GENERATION_CREATE, opts)
 	return opts, nil
 }
 
@@ -122,7 +123,7 @@ func (l *LangFuse) Score(ctxt context.Context, opts *Score) (*Score, error) {
 		return nil, fmt.Errorf("name is required")
 	}
 
-	l.eventManager.Enqueue(opts.ID, SCORE_CREATE, opts)
+	l.eventManager.Enqueue("", SCORE_CREATE, opts)
 	return opts, nil
 }
 
