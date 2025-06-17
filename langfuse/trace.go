@@ -12,12 +12,12 @@ type Trace struct {
 	Public    bool     `json:"public"`
 }
 
-func (o Trace) Update(opts *Trace) error {
+func (o Trace) Update() error {
 	if o.ID == "" {
 		return errors.New("trace id is not set")
 	}
 
-	o.eventManager.Enqueue(o.ID, TRACE_CREATE, opts)
+	o.eventManager.Enqueue(o.ID, TRACE_CREATE, o)
 	return nil
 }
 

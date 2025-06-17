@@ -148,7 +148,7 @@ type Span struct {
 	EndTime   *time.Time `json:"endTime,omitempty"`
 }
 
-func (s *Span) Update(opts *Span) error {
+func (s *Span) Update() error {
 	if s.ID == "" {
 		return errors.New("span id is not set")
 	}
@@ -180,7 +180,7 @@ type Generation struct {
 	PromptVersion       string                 `json:"promptVersion,omitempty"`
 }
 
-func (g *Generation) Update(opts *Generation) error {
+func (g *Generation) Update() error {
 	if g.ID == "" {
 		return errors.New("generation id is not set")
 	}
